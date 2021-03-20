@@ -17,8 +17,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONObject;
 
-public class MainActivity extends AppCompatActivity implements Response.Listener<JsonObjectRequest>, Response.ErrorListener {
+
+public class MainActivity extends AppCompatActivity  {
 
     private EditText etId, etName, etSport;
     private Button btnSubmit;
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements Response.Listener
                 cargarWebService();
             }
 
+
             private void cargarWebService() {
 
                 progreso= new ProgressDialog(MainActivity.this);
@@ -56,33 +59,33 @@ public class MainActivity extends AppCompatActivity implements Response.Listener
                         "&sport=" + etSport.getText().toString();
 
 
-                jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,url,null,null,null );
+                jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,url, null,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                progreso.hide();
+                                Toast.makeText(getApplicationContext(),"Exito al guardar :) "+ response.toString(), Toast.LENGTH_LONG).show();
+                                etId.setText(" ");
+                                etName.setText(" ");
+                                etSport.setText(" ");
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        progreso.hide();
+                        Toast.makeText(getApplicationContext(),"Error :( "+error.toString(), Toast.LENGTH_SHORT).show();
+                        Log.i("Error",error.toString());
+
+                    }
+                });
                 request.add(jsonObjectRequest);
 
             }
+
+
         });
 
-
-    }
-    @Override
-    public void onResponse(JsonObjectRequest response) {
-        Toast.makeText(this,"Exito :)", Toast.LENGTH_SHORT).show();
-        progreso.hide();
-        etId.setText(" ");
-        etName.setText(" ");
-        etSport.setText(" ");
-
-    }
-    @Override
-    public void onErrorResponse(VolleyError error) {
-        progreso.hide();
-        Toast.makeText(this,"Error :("+error.toString(), Toast.LENGTH_SHORT).show();
-        Log.i("Error",error.toString());
     }
 
 
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-
-    }
 }
